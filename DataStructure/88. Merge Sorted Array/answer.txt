@@ -1,0 +1,138 @@
+import "sort"
+// https://tour.golang.org/moretypes/7
+// https://gobyexample.com/sorting
+/*
+Runtime: 0 ms, faster than 100.00% of Go online submissions for Merge Sorted Array.
+Memory Usage: 3.6 MB, less than 66.67% of Go online submissions for Merge Sorted Array
+https://leetcode.com/problems/merge-sorted-array/submissions/
+*/
+//Brute Force
+func merge(a []int, m int, b []int, n int)  {
+    x := append(a[0:m],b[0:n]...)
+    sort.Ints(x)
+    for key,value := range x {
+        a[key] = value
+    }
+}
+
+
+//Golang Merge Sorted Arrays O(m+n) No Array Copy
+
+func merge(nums1 []int, m int, nums2 []int, n int)  {
+    i := m - 1
+    j := n - 1
+    for k:=m+n-1; k>=0; k-- {
+        if i>=0 && j>=0 && nums1[i] > nums2[j] {
+            nums1[k] = nums1[i]
+            i--
+        } else if j>=0 {
+            nums1[k] = nums2[j]
+            j--
+        }
+    }
+}
+
+
+
+
+=============
+
+
+Problem: Merge Sorted Array (Easy)
+I think this is an easy-medium question. If you don't understand the optimal solution and it's the first time you read about the "Two/Three Pointers" algorithm/pattern, don't worry, you will master it soon!
+
+Solution 1: brute force - merge and sort
+Time: O(nlogn)
+Space: O(1)
+
+// Time: O(nlogn)
+// Space: O(1)
+func merge(nums1 []int, m int, nums2 []int, n int)  {
+    // Merge nums1 and nums2
+    nums1 = append(nums1[:n], nums2...)
+    
+    // Sort nums1
+    sort.Ints(nums1)
+}
+
+Because some people like one line:
+
+// Time: O(nlogn)
+// Space: O(1)
+func merge(nums1 []int, m int, nums2 []int, n int)  {
+    sort.Ints(append(nums1[:n], nums2...))
+}
+
+Solution 2: three pointers
+Time: O(n+m)
+Space: O(1)
+
+
+// TIme: O(ptr3) = O(m+n-1) = O(m+n)
+// Spac: O(1)
+func merge(nums1 []int, m int, nums2 []int, n int)  { 
+    var ptr1, ptr2, ptr3 int = m-1, n-1, m+n-1
+    for ; ptr1 >= 0 && ptr2 >= 0; ptr3-- {
+        if nums2[ptr2] >= nums1[ptr1] {
+            nums1[ptr3] = nums2[ptr2]
+            ptr2--
+        } else {
+            nums1[ptr3] = nums1[ptr1]
+            ptr1--
+        }
+    }
+    
+    if ptr2 >= 0 {
+        copy(nums1[:ptr3+1], nums2[:ptr2+1])
+    }
+}
+
+
+//Time : O(m+n)
+
+
+func merge(nums1 []int, m int, nums2 []int, n int)  {   
+    i, j, k := m-1, n-1, m+n-1
+    for ; j>=0; k-- {
+        if i >=0 && nums1[i] > nums2[j] {
+            nums1[k] = nums1[i]
+            i--
+        } else {
+            nums1[k] = nums2[j]
+            j--
+        }
+    }
+}
+//O(m)
+func merge(nums1 []int, m int, nums2 []int, n int)  {
+    for m > 0 || n > 0 {
+        if m > 0 && (n == 0 || nums1[m-1] >= nums2[n-1]) {
+            nums1[m+n-1] = nums1[m-1]
+            m--
+            continue
+        }
+        nums1[m+n-1] = nums2[n-1]
+        n--
+    }
+}
+func merge1(nums1 []int, m int, nums2 []int, n int) {
+	for t := m + n - 1; t >= 0; t-- {
+		if m == 0 || n == 0 {
+			if m == 0 {
+				nums1[t] = nums2[n-1]
+				n--
+			} else {
+				nums1[t] = nums1[m-1]
+				m--
+			}
+			continue
+		}
+		if nums1[m-1] > nums2[n-1] {
+			nums1[t] = nums1[m-1]
+			m--
+		} else {
+			nums1[t] = nums2[n-1]
+			n--
+		}
+	}
+}

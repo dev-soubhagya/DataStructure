@@ -1,0 +1,151 @@
+Hello Gophers!
+
+Problem: Two Sum (Easy)
+Solution 1: brute force
+Time: O(n^2)
+Space: O(1)
+
+// Time: O(n*n) = O(n^2)
+// Space: O(1)
+func twoSum(nums []int, target int) []int {
+    // O(n)
+    for i := 0; i < len(nums)-1; i++ {
+        // O(n)
+        for j := i+1; j < len(nums); j++ {
+			// Time: O(1)
+            if nums[i] + nums[j] == target {
+                return []int{i, j}
+            }
+        }
+    }
+    return []int{}
+}
+Solution 2: hashmap/set
+Time: O(n)
+Space: O(n)
+
+// Time: O(n+n) = O(2n) = O(n)
+// Space: O(n)
+func twoSum(nums []int, target int) []int {
+    // Space: O(n)
+    m := make(map[int]int, 0)
+
+    // Time: O(n)
+    for idx, num := range nums {
+        m[num] = idx
+    }
+
+    // Time: O(n)
+    for indexX, num := range nums {
+        // Time: O(1)
+        if indexY, ok := m[target - num]; ok && indexX != indexY {
+            return []int{indexX, indexY}
+        }
+    }
+
+    return []int{}
+}
+Same time complexity, slight improvement:
+
+Time: O(n)
+Space: O(n)
+
+// Time: O(n)
+// Space: O(n)
+func twoSum(nums []int, target int) []int {
+    // Space: O(n)
+    s := make(map[int]int)
+
+    // Time: O(n)
+    for idx, num := range nums {
+        // Time: O(1)
+        if pos, ok := s[target-num]; ok {
+            return []int{pos, idx}
+        }
+        s[num] = idx
+    }
+    return []int{}
+}
+I like to have my own data structre when the problem is harder because you can scale it.
+We don't really need it, but that's how I implement a set/dict data structure (instead of using a map directly):
+
+// Time: O(n)
+// Space: O(n)
+func twoSum(nums []int, target int) []int {
+	// Space: O(n)
+    s := newSet()
+    
+	// Time: O(n)
+    for idx, num := range nums {
+        if desired := target - num; s.has(desired) {
+            idx2 := s.get(desired)
+            return []int{idx2, idx}
+        }
+        s.add(num, idx)
+    }
+    return []int{}
+}
+
+type set struct {
+    items map[int]int
+}
+
+func newSet() *set{
+    return &set{
+        items: make(map[int]int),
+    }
+}
+
+func (s *set) add(value, position int) {
+    s.items[value] = position
+}
+
+func (s *set) has(i int) bool {
+    _, exists := s.items[i]
+    return exists
+}
+
+func (s *set) get(i int) int {
+    idx, exists := s.items[i]
+    if !exists {
+        return -1
+    }
+    return idx
+}
+Extending the problem: items are sorted
+Solution: two pointers
+The values in the slice (array) must be sorted to use this algorithm.
+If you sort them by yourself, you would lose the positions of the nums in the slice (array)...
+
+Time: O(n)
+Space: O(1)
+
+// Time: O(n)
+// Space: O(1)
+// nums must be sorted!
+func twoSum(nums []int, target int) []int {
+    if len(nums) <= 1 {
+        return []int{}
+    }
+
+    // Time: O(n)
+    var ptr1, ptr2 int = 0, len(nums)-1
+    for ptr1 < ptr2 {
+        current := nums[ptr2] + nums[ptr1]
+		// Time: O(1) best O(3) worst so O(1)
+        if current == target {
+            return []int{ptr1, ptr2}
+        } else if current > target {
+            ptr2--
+        } else /* if current < target */ {
+            ptr1++
+        }
+    }
+    
+    return []int{}
+}
+Summary
+Items are not sorted
+Space complexity must be O(1): brute force
+Space complexuty can be O(n): hashmap/set
+Items are sorted: two pointers

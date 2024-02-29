@@ -1,0 +1,85 @@
+https://levelup.gitconnected.com/coding-problem-sorted-squared-array-in-go-b6880ee409a6
+Understanding Sorted Squared Array
+This is a beginner level coding problem with an input of a sorted array and an output of the squared values of that array that are also sorted. A simple example that might jump to your mind could look like this:
+
+Input:  [0, 1, 2, 3]
+Output: [0, 1, 4, 9]
+Ok, but don’t get ahead of yourself. A common mistake here is to forget about negative values within the input array. When you square a number, the result is always positive. The absolute value of the input number decides the magnitude of the output number. So input numbers that are really small but negative turn into really large output numbers that are positive. Here’s another example:
+
+Input:  [-5, -1, 2, 4]
+Output: [1, 4, 16, 25]
+Here the smallest input value -5 turned into the largest output value 25. Essentially, the further the input value is from zero, the larger the output number will be.
+
+
+Solution #1 — O(NlogN) Time, O(N) Space
+As usual, let’s look at the brute force solution to begin. 
+Assuming we can’t change the input array, we need to first allocate memory for the result array. 
+We can do so using the make() function where the first parameter signals that we want an integer array []int, and the second parameter is the size of that array which we want to be len(array).
+
+package sorting
+
+import "sort"
+
+//SortedSquaredArray takes an array of integers and returns the sorted squared result
+func SortedSquaredArray(array []int) []int {
+	result := make([]int, len(array))
+	for i := range array {
+		result[i] = array[i]*array[i]
+	}
+	sort.Ints(result)
+	return result
+}
+
+
+
+Then, we copy over the squared value of each element in the input array and store them into the result array. We can simply call sort.Ints(result) to sort the squared values in our result array to then return.
+
+Since sorting algorithms are commonly O(NlogN) time and the for loop only ranges over the N elements of the array, we have a time complexity of O(NlogN) and a space complexity of O(N) since we have to create a new array that’s the size of the input array.
+
+
+
+
+Solution #2 — O(N) Time, O(N) Space
+The next solution relies on the principles of this problem. What happens as a positive or negative value grows further from zero? The squared result becomes larger and larger. So what we really care about is the absolute value of each element in the input array.
+
+Remember, the input array is already sorted — so we can keep track of the smallest absolute value and the largest absolute value in the input array by having indices start from the beginning and end of the array. We can then iteratively check which index represents the larger absolute value in the input array.
+
+If the rightmost value is greater, than we choose it as the next value to be squared and copied into the result array. If the leftmost value is greater, then we choose that value to be stored. We will then increment or decrement the leftmost and the rightmost indices, respectively.
+
+Furthermore, we can write a helper method abs() which returns the absolute value of an integer. The final code looks like this
+
+
+
+//SortedSquaredArray takes an array of integers and returns the sorted squared result
+func SortedSquaredArray(array []int) []int {
+	result := make([]int, len(array))
+	leftValueIdx := 0
+	rightValueIdx := len(array)-1
+    
+	for currIdx := len(array)-1; currIdx >= 0; currIdx-- {
+		leftValue := array[leftValueIdx]
+		rightValue := array[rightValueIdx]
+
+		if abs(rightValue) > abs(leftValue) {
+			result[currIdx] = rightValue * rightValue
+			rightValueIdx -= 1
+		} else {
+			result[currIdx] = leftValue * leftValue
+			leftValueIdx += 1
+		}
+	}
+	return result
+}
+
+func abs(a int) int {
+	if a < 0 {
+		return -a
+	} else {
+		return a
+	}
+}
+
+This improves our time complexity since we never examine more than N elements in the input array. Thus the final time complexity is O(N) and the space complexity is still at O(N) since there weren’t any improvements we could make.
+
+If we run our tests again, we still pass all of them.
+

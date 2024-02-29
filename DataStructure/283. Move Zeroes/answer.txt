@@ -1,0 +1,55 @@
+Approach
+We define the left pointer lll that points to the place we will move the next non-zero number to.
+
+The right pointer rrr would go through the array. Two cases here:
+
+If nums[r] == 0, do nothing.
+Otherwise, we set nums[l]=nums[r] and increment lll by one.
+After the right pointer is done going through the array, the pointer lll would be EXACTLY at the place we setting elements to zero at. So we just simply move lll to the end of the array setting all elements to zero.
+
+Complexity
+Time complexity: O(n)
+Space complexity: O(1)
+Code
+func moveZeroes(nums []int)  {
+    l := 0
+
+    for r := range nums {
+        if nums[r] != 0 {
+            nums[l] = nums[r]
+            l++
+        }
+    }
+    for ; l < len(nums); l++ {
+        nums[l] = 0
+    }
+    return
+}
+
+answer 2:
+
+func moveZeroes(nums []int)  {
+    nonZeroIndex := 0
+    for i := 0; i < len(nums); i++ {
+        if nums[i] != 0 {
+            nums[i], nums[nonZeroIndex] = nums[nonZeroIndex], nums[i]
+            nonZeroIndex++
+        }
+    }
+}
+
+answer 3:
+
+func moveZeroes(nums []int)  {
+    j:=0
+    for i:=0;i<len(nums);i++{
+    
+        if nums[i]!=0 {  //if nums[i]!=0 && i != j
+            nums[j],nums[i] = nums[i],nums[j]   
+        }
+        if nums[j]!=0 {
+            j++
+        }
+    }
+}
+

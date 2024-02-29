@@ -1,0 +1,163 @@
+A Brute Force Solution — O(N²) Time, O(1) Space
+================================================
+Let’s think of the most simple way to check if there are two numbers in the array that add up to target.
+ We could easily check a single element of the array at a time, 
+and then check the rest of the elements of the array to see if the two match up.
+
+So we will have two parameters, an array of integers and a target value. 
+We will also return an array of integers by adding []int after our function parameters. 
+Then we will have the value start for the current value of the first for loop, and the value end for the second for loop.
+ It’s important that we set j=i+1 so that we don’t double count a single value in the array.
+
+
+solution in Go :(1st and bad approach)
+
+func twoSum(array []int, target int) []int {
+    for i := 0; i < len(array); i++ {
+        var start = array[i]
+        for j := i+1; j < len(array); j++ {
+            var end = array[j]
+            if (start + end) == target {
+                return []int{i, j}
+            }
+        }
+    }
+
+    return []int{}
+}
+===============================================
+
+Using a Hash Map — O(N) Time, O(N) Space
+=========-------------------------------
+
+Alright, let’s think a bit harder. What’s the main inefficiency we see with the double for loop solution? 
+Well, we are actually looping over several elements many times, definitely more than what’s necessary. 
+What if we could keep track of what we have already seen, so we don’t have to repeatedly check the elements of the array?
+
+We can do just that with a hash map! Go makes implementing this data structure a breeze, 
+and part of what makes it so useful is that it has constant O(1) access time. Let’s add this to our new function attempt.
+
+In our new twoSum() function, we first initialize an empty hash map called seenNums. 
+We will store the numbers we have already seen as a hash map key, and the indices of those numbers as a hash map value.
+
+We can use the range keyword to get the current index i and corresponding number num from array. 
+For each value of the array, we create a variable potentialMatch that could be the value we need.
+ We subtract the current value num from target to get the number that we need and hope is in our seenNums hash map.
+ So if our target is 9 and we are currently have the value 3, we need to see if 9–3=6 is in our hash map.
+
+To verify this, we do a nice Go one-liner with our hash map. Remember, our hash map seenNums stores the seen number as a key,
+ and the index of that number as a value. On line 5, we get the value (index) j, and a boolean value found that tells us if the key potentialMatch exists in seenNums. 
+If found is true, we can immediately check by placing it directly after we add ; to the end of our hash map operation.
+
+So if all of this checks out, then our hash map does in fact have the potentialMatch to our current num value! We can then return the current index i and the index of our potentialMatch, j.
+
+Don’t forget: after checking each element in our for loop,
+ we have to add the key num and the value i to our hash map seenNums to keep track of what numbers we have seen and what their indices are.
+
+
+
+solution 2:(best approach)
+
+func twoSum(array []int, target int) []int {
+    seenNums := map[int]int{}
+    for i, num := range array {
+        potentialMatch := target - num
+        if j, found := seenNums[potentialMatch]; found {
+            return []int{i, j}
+        }
+        seenNums[num] = i
+    }
+    return []int{}
+}
+
+or : 
+
+solution : 
+
+func twoSum(nums []int, target int) []int {
+    m := make(map[int]int)
+    for idx, num := range nums {
+        
+        if v, found := m[target - num]; found { return []int{v,idx} }
+        
+        m[num] = idx
+    }
+    return nil
+}
+
+n.b.
+Runtime: 4ms Memory: 3.7MB
+
+
+or : 
+
+solution : 
+
+
+func twoSum(nums []int, target int) []int {
+    mymap := make(map[int]int)
+    for i := 0; i < len(nums); i++ {
+        j, ok := mymap[target-nums[i]]
+        if ok {
+            result := []int{j, i}
+            return result
+        }
+        mymap[nums[i]] = i
+    }
+    result := []int{-1, -1}
+    return result
+}
+
+
+
+https://leetcode.com/problems/two-sum/solutions/1768668/go-many-solutions-clean-code-0ms-100/
+
+Extending the problem: items are sorted
+Solution: two pointers
+The values in the slice (array) must be sorted to use this algorithm.
+If you sort them by yourself, you would lose the positions of the nums in the slice (array)...
+
+Time: O(n)
+Space: O(1)
+
+// Time: O(n)
+// Space: O(1)
+// nums must be sorted!
+func twoSum(nums []int, target int) []int {
+    if len(nums) <= 1 {
+        return []int{}
+    }
+
+    // Time: O(n)
+    var ptr1, ptr2 int = 0, len(nums)-1
+    for ptr1 < ptr2 {
+        current := nums[ptr2] + nums[ptr1]
+		// Time: O(1) best O(3) worst so O(1)
+        if current == target {
+            return []int{ptr1, ptr2}
+        } else if current > target {
+            ptr2--
+        } else /* if current < target */ {
+            ptr1++
+        }
+    }
+    
+    return []int{}
+}
+
+
+
+Summary
+Items are not sorted
+Space complexity must be O(1): brute force
+Space complexuty can be O(n): hashmap/set
+Items are sorted: two pointers
+
+
+
+
+Note: 
+
+However, the two pointer solution only works if nums[i] >= 0. The solution wont work if nums[i] < 0. Since the problem constraints indicate that nums[i] could also be negative, the two pointer solution won't work for all nums[i].
+
+e.g. [-4,-5, -2, -1, 1, 5, 10, 11]
